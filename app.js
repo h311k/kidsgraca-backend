@@ -2,8 +2,11 @@ const express = require('express')
 const cors = require('cors')
 const bodyParser = require('body-parser')
 const fs = require('fs')
+const mongoose = require('mongoose')
 
 // Importar abaixo dessa linha as rotas.
+const usuario = require('./app/routes/usuario.route')
+const setup = require('./app/routes/setup.route')
 
 // Lendo o arquivo de configuracoes...
 const conf = JSON.parse(fs.readFileSync('config/app.conf'))
@@ -14,8 +17,15 @@ chave = conf.chaveEncriptacaoSenhaUsuario
 // Armazena a chave do JWT
 chaveJWT = conf.chaveJWT
 
-// Armazena a url de conexao
-dbUrl = conf.dbUrl
+// Armazena o tempo de expiracao do JWT
+expiracaoJWT = conf.expiracaoJWT
+
+// Abre o pool de conexao
+mongoose.connect(conf.dbUrl, { useUnifiedTopology: true, useNewUrlParser: true })
+
+const db = mongoose.connection
+
+db.on('error', console.error.bind(console, 'Erro na conexão com o MongoDB'))
 
 const app = express()
 
@@ -26,6 +36,8 @@ app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({extended: false}))
 
 // Associar aqui a URI a rota
+app.use('/usuario', usuario)
+app.use('/setup', setup)
 
 // Aponta o diretorio de estaticos
 app.use(express.static('./app/public'))
