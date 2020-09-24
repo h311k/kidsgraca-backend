@@ -7,6 +7,7 @@ const mongoose = require('mongoose')
 // Importar abaixo dessa linha as rotas.
 const usuario = require('./app/routes/usuario.route')
 const setup = require('./app/routes/setup.route')
+const grupo = require('./app/routes/grupo.route')
 
 // Lendo o arquivo de configuracoes...
 const conf = JSON.parse(fs.readFileSync('config/app.conf'))
@@ -38,6 +39,7 @@ app.use(bodyParser.urlencoded({extended: false}))
 // Associar aqui a URI a rota
 app.use('/usuario', usuario)
 app.use('/setup', setup)
+app.use('/grupo', grupo)
 
 // Aponta o diretorio de estaticos
 app.use(express.static('./app/public'))

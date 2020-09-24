@@ -26,11 +26,11 @@ exports.signJWT = (payload) => {
  * @param {*} req 
  * @param {*} callback 
  */
-exports.validateJWT = (req, callback) => {
+exports.validateJWT = (req, res, callback) => {
     let token = req.headers['x-access-token']
-    if(!token) callback({ status:401, auth: false, message: 'No token provided.' })
+    if(!token) res.send({ status:401, auth: false, message: 'No token provided.' })
     jwt.verify(token, chaveJWT, (err, decoded) => {
-        if (err) callback({ status:401, auth: false, message: 'Failed to authenticate token.' })
+        if (err) res.send({ status:401, auth: false, message: 'Failed to authenticate token.' })
         decoded.auth = true
         callback(decoded) 
     })

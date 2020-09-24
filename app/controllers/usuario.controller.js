@@ -7,6 +7,16 @@ exports.create = (req, res, next) => {
     })
 }
 
+exports.auth = (req, res, next) => {
+    Usuario.findOne({
+        'email': req.body.email,
+        'senha': security.encrypt(req.body.senha),
+    }, 'nome email dataCriacao membroDe',
+        (err, usuario) => {
+            err ? next(err) : usuario == null ? res.status(401).send('Nome de usuário ou senha inválidos.') : res.send(security.signJWT(usuario))
+        })
+}
+
 var save = (req, res) => {
     let usuario = new Usuario({
         email: req.body.email,
@@ -21,8 +31,8 @@ var save = (req, res) => {
 var verificaUsuarioExistente = (req, next, callback) => {
     Usuario.findOne({
         'email': req.body.email,
-    },'email',
-    (err, usuario) => {
-        err ? next(err) : usuario ? callback({status:500, mensagem: 'Este email já está em uso'}) : callback()
-    })
+    }, 'email',
+        (err, usuario) => {
+            err ? next(err) : usuario ? callback({ status: 500, mensagem: 'Este email já está em uso' }) : callback()
+        })
 }

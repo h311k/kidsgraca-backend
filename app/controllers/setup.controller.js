@@ -2,7 +2,7 @@ const security = require('../util/security')
 const Usuario = require('../models/usuario.model')
 const Grupo = require('../models/grupo.model')
 const Permissao = require('../models/permissao.model')
-const permissaoModel = require('../models/permissao.model')
+const Categoria = require('../models/categoria.model')
 
 /**
  * Realiza a sequencia de instalacao, criando o usuario admin grupos de administrador e usuario, categorias de posts e etc.
@@ -16,6 +16,9 @@ exports.install = (req, res, next) => {
 
     createBasicPermissions(next, callback => {
         resposta.criacaoPermissoes = callback
+        createBasicCategory(next, callback => {
+            resposta.criacaoCategoria = callback
+        })
         getBasicPermissions(next, callback => {
             permissoes = callback
             // Cria o grupo de usuarios nao administradores.
@@ -82,6 +85,15 @@ var createBasicPermissions = (next, callback) => {
     let model = new Permissao()
     model.collection.insertMany(permissoes, response => {
         callback('Lista básica de permissões criada com sucesso.')
+    })
+}
+
+var createBasicCategory = (next, callback) => {
+    let categoria = new Categoria({
+        nome: 'Geral'
+    })
+    categoria.save((err) => {
+        err ? next(err) : callback('Categoria geral criada com sucesso.')
     })
 }
 
